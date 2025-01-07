@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Send Email</title>
+  </head>
+  <body>
+    <h1>Send Email</h1>
+    <form id="emailForm">
+      <label for="from">From :</label><br />
+      <input id="from" name="from" ></input><br /><br />
+      <label for="to">To (comma-separated emails):</label><br />
+      <input id="to" name="to" ></input><br /><br />
+
+      <label for="subject">Subject:</label><br />
+      <input type="text" id="subject" name="subject" required /><br /><br />
+
+      <label for="text">Message:</label><br />
+      <textarea id="text" name="text" rows="4" required></textarea><br /><br />
+
+      <label for="file">Attachment:</label><br />
+      <input type="file" multiple id="file" name="file" /><br /><br />
+
+      <button type="submit">Send Email</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("emailForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData();
+
+          formData.append("from", document.getElementById("from").value);
+          formData.append("to", document.getElementById("to").value);
+          formData.append("subject", document.getElementById("subject").value);
+          formData.append("text", document.getElementById("text").value);
+
+          const fileInput = document.getElementById("file");
+          if (fileInput.files.length > 0) {
+            Array.from(fileInput.files).forEach((file) => 
+          formData.append("files", file)
+        )
+                    }
+
+          console.log("Form data:", fileInput.files);
+
+          try {
+            const response = await fetch(
+              "http://localhost:3000/api/send-email",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+
+            const result = await response.json();
+            console.log("Result:", result);
+            alert(result.message || "Email sent successfully!");
+          } catch (error) {
+            console.error("Error sending email:", error);
+            alert("Failed to send email. Check the console for details.");
+          }
+        });
+    </script>
+  </body>
+</html>
